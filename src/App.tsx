@@ -14,7 +14,7 @@ function App() {
   const [selectedList, setSelectedList] = React.useState<String[]>([]);
 
   const getAllOrders = () => {
-    axios.get('https://45.33.84.231/api/Orders')
+    axios.get('http://45.33.84.231/api/Orders')
     .then((res) => {
       if (res.status === 200) {
         setMasterList(res.data);

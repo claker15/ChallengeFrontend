@@ -22,8 +22,6 @@ const Table = (props: tableProps) => {
         });
     }, [props.rows])
 
-    const [selected, setSelected] = React.useState([]);
-
     return (
         <div style={{height: 400, width: "100%"}}>
             <DataGrid

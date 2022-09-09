@@ -4,7 +4,7 @@ import Nav from './components/nav/nav';
 import Table from './components/table/table';
 import Menu from './components/menu/menu';
 import axios from 'axios';
-
+import { Alert } from '@mui/material'
 
 
 function App() {
@@ -12,6 +12,7 @@ function App() {
   const [masterList, setMasterList] = React.useState<Order[]>([]);
   const [filteredList, setFilteredList] = React.useState<Order[]>([]);
   const [selectedList, setSelectedList] = React.useState<String[]>([]);
+  const [error, setError] = React.useState(false);
 
   const getAllOrders = () => {
     axios.get('http://45.33.84.231/api/Orders')
@@ -21,8 +22,9 @@ function App() {
         setFilteredList(res.data);
       }
     })
+    //need to handle error to show user something went wrong.
     .catch((error) => {
-      console.log(error);
+      setError(true)
     })
   }
 
@@ -30,14 +32,11 @@ function App() {
     getAllOrders()
   }, []);
 
-  ///todo: add new entry function
-
   const onFilterChange = (value: string) => {
     if (value === '') {
       getAllOrders();
       return;
     }
-    //make call to database for order type
     axios.get(`http://45.33.84.231/api/Orders/ByType?type=${value}`)
     .then((res) => {
       if (res.status === 200) {
@@ -46,7 +45,7 @@ function App() {
       }
     })
     .catch((error) => {
-      console.log(error)
+      setError(true)
     })
   };
 
@@ -64,7 +63,6 @@ function App() {
     if (selectedList.length === 0) {
       return
     }
-    //remove from database
     axios.post('http://45.33.84.231/api/Orders/Delete', selectedList)
     .then((res) => {
       if (res.status === 200) {
@@ -72,13 +70,15 @@ function App() {
       }
     })
     .catch((error) => {
-      console.log(error);
+      setError(true)
     })
   }
 
   return (
     <div className="App">
       <Nav></Nav>
+      {/* This could be a dynamic string */}
+      {error && <Alert severity='error' onClose={() => setError(false)}>Something went wrong. Please try again later</Alert>}
       <Menu onFilterChange={onFilterChange} onSearchChange={onSearchChange} onDeleteClick={onDeleteClick}></Menu>
       <Table rows={filteredList} onSelectChange={onSelectChange}></Table>
     </div>
